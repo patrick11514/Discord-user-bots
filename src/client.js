@@ -561,52 +561,6 @@ class Client {
             });
         });
     }
-
-    /**
-     * Replies to a message
-     * @param {string} message The message content
-     * @param {string} targetmessageid The message to reply
-     * @param {string} channelid The channel ID of the message
-     * @returns {Promise<Object>} The message info
-     */
-    async reply(message, targetmessageid, channelid) {
-        if (this.ready_status === 0) return new Error("Client still in connecting state.");
-        if (!message || !targetmessageid || !channelid) return new Error("Invalid parameters");
-        return new Promise((res, rej) => {
-            fetch(`https://discord.com/api/${this.config.api}/channels/${channelid}/messages`, {
-                headers: {
-                    accept: "*/*",
-                    "accept-language": this.config.language,
-                    authorization: this.token,
-                    "content-type": "application/json",
-                    "sec-fetch-dest": "empty",
-                    "sec-fetch-mode": "cors",
-                    "sec-fetch-site": "same-origin",
-                },
-                referrer: `https://discord.com/channels/@me/${channelid}`,
-                referrerPolicy: "no-referrer-when-downgrade",
-                body: JSON.stringify({
-                    content: message,
-                    nonce: "",
-                    tts: false,
-                    message_reference: {
-                        channel_id: channelid,
-                        message_id: targetmessageid,
-                    },
-                    allowed_mentions: {
-                        parse: ["users", "roles", "everyone"],
-                        replied_user: false,
-                    },
-                }),
-                method: "POST",
-                mode: "cors",
-            }).then((response) => {
-                response.json().then((m) => {
-                    res(m);
-                });
-            });
-        });
-    }
     
     /**
      * Edit message with given text in given channel
@@ -647,6 +601,52 @@ class Client {
     }
 
     /**
+     * Replies to a message
+     * @param {string} message The message content
+     * @param {string} targetmessageid The message to reply
+     * @param {string} channelid The channel ID of the message
+     * @returns {Promise<Object>} The message info
+     */
+     async reply(message, targetmessageid, channelid) {
+        if (this.ready_status === 0) return new Error("Client still in connecting state.");
+        if (!message || !targetmessageid || !channelid) return new Error("Invalid parameters");
+        return new Promise((res, rej) => {
+            fetch(`https://discord.com/api/${this.config.api}/channels/${channelid}/messages`, {
+                headers: {
+                    accept: "*/*",
+                    "accept-language": this.config.language,
+                    authorization: this.token,
+                    "content-type": "application/json",
+                    "sec-fetch-dest": "empty",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-site": "same-origin",
+                },
+                referrer: `https://discord.com/channels/@me/${channelid}`,
+                referrerPolicy: "no-referrer-when-downgrade",
+                body: JSON.stringify({
+                    content: message,
+                    nonce: "",
+                    tts: false,
+                    message_reference: {
+                        channel_id: channelid,
+                        message_id: targetmessageid,
+                    },
+                    allowed_mentions: {
+                        parse: ["users", "roles", "everyone"],
+                        replied_user: false,
+                    },
+                }),
+                method: "POST",
+                mode: "cors",
+            }).then((response) => {
+                response.json().then((m) => {
+                    res(m);
+                });
+            });
+        });
+    }
+
+    /**
      * Deletes a message
      * @param {string} targetmessageid The message to delete
      * @param {string} channelid The channel the message is in
@@ -673,6 +673,38 @@ class Client {
                 credentials: "include",
             }).then((response) => {
                 res(response);
+            });
+        });
+    }
+
+    /**
+     * Get channel info
+     * @param {string} channelid Id of channel
+     * @returns {Promise<Object>} The response from Discord
+     */
+     async get_channel_info(channelid) {
+        if (this.ready_status === 0) return new Error("Client still in connecting state.");
+        if (!channelid) return new Error("Invalid parameters");
+        return new Promise((res, rej) => {
+            fetch(`https://discord.com/api/${this.config.api}/channels/${channelid}`, {
+                headers: {
+                    accept: "*/*",
+                    "accept-language": this.config.language,
+                    authorization: this.token,
+                    "sec-fetch-dest": "empty",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-site": "same-origin",
+                },
+                referrer: `https://discord.com/channels/@me/${channelid}`,
+                referrerPolicy: "no-referrer-when-downgrade",
+                body: null,
+                method: "GET",
+                mode: "cors",
+                credentials: "include",
+            }).then((response) => {
+                response.json().then((m) => {
+                    res(m);
+                });
             });
         });
     }
